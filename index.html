@@ -122,30 +122,42 @@
   </style>
 </head>
 
-<body>
+<body onload="checkPassword()">
   <header>
     <img src="https://blobby-boi.github.io/BlobbypassXSS/favicon.png" alt="Logo" class="logo">
     <h1>ExtHang3r</h1>
   </header>
 
-  <div class="container">
-    <p>ExtHang3r is an exploit that allows ChromeOS users to kill managed extensions after the LTMEAT patch. It remains unpatched in all new ChromeOS versions as of September 2024.</p>
-    <label for="iframeSelect" id="labelForIframeSelect">Select extension:</label>
-    <select id="iframeSelect"></select>
-    <button onclick="warning();" id="hangButton">Hang Extension!</button>
-    <button id="killButton" onclick="openExtensionPopup();" style="display:none;">Kill Extension!</button>
-  </div>
+  <div id="content" style="display: none;">
+    <div class="container">
+      <p>ExtHang3r is an exploit that allows ChromeOS users to kill managed extensions after the LTMEAT patch. It remains unpatched in all new ChromeOS versions as of September 2024.</p>
+      <label for="iframeSelect" id="labelForIframeSelect">Select extension:</label>
+      <select id="iframeSelect"></select>
+      <button onclick="warning();" id="hangButton">Hang Extension!</button>
+      <button id="killButton" onclick="openExtensionPopup();" style="display:none;">Kill Extension!</button>
+    </div>
 
-  <div class="overlay" id="overlay">
-    <div class="spinner"></div>
-    Hanging... (This will take about 1 minute)
-  </div>
+    <div class="overlay" id="overlay">
+      <div class="spinner"></div>
+      Hanging... (This will take about 1 minute)
+    </div>
 
-  <footer>
-    <p>Made by <a href="https://github.com/Blobby-Boi/">Blobby Boi</a></p>
-  </footer>
+    <footer>
+      <p>Made by <a href="https://github.com/Blobby-Boi/">Blobby Boi</a></p>
+    </footer>
+  </div>
 
   <script>
+    function checkPassword() {
+      const password = prompt("Please enter the password:");
+      if (password === "danielstinks69") {
+        document.getElementById("content").style.display = "block";
+      } else {
+        alert("Incorrect password. Access denied.");
+        window.location.href = "about:blank"; // Redirects to a blank page
+      }
+    }
+
     async function checkExtensionURL(url) {
       try {
         const response = await fetch(url);
